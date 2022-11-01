@@ -1,13 +1,14 @@
-<?php 
-include'db.php';
 
-$_id = $_GET['id'];
-
-$delete = "DELETE FROM `buyers` WHERE `id`=$_id";
+<?php
+include('db.php');
+extract($_POST);
+print_r($_POST);
+$delete = "DELETE FROM `student` WHERE `id`=$id";
 
 if($connection->query($delete)){
-    header("Location:desire.php?msg=DATA DELETED SUCCESSFULLY");
+    echo "DATA DELETED";
 }else{
-    header("Location:desire.php?msg=DATA DELETED SUCCESSFULLY");
+    echo "DATA NOT DELETED..";
 }
+
 ?>

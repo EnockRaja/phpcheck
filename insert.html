@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        label {
+            display: block;
+            width: 50%;
+            margin: auto;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        input {
+            width: 40%;
+            height: 30px;
+            margin-left: 15%;
+        }
+
+
+
+        table,
+        td {
+            border: 1px solid orangered;
+        }
+
+        .butnns,
+        .btn_ss,
+        .btn_s {
+            background-color: green;
+            color: white;
+            font-weight: 700;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="" method="post" id="form_one">
+        <input type="hidden" name="id" id="idle">
+        <label for="">name<input type="text" name="fname" id="fname"></label>
+        <label for="">age<input type="text" name="age" id="age"></label>
+        <label for="">mobile<input type="text" name="mob" id="mob"></label>
+    </form>
+    <button type="submit" id="butn" class="butnns">SUBMIT</button>
+    <button type="submit" id="butn_2" class="butnns" style="display:none;">UPDATE</button>
+    <button type="button" class="butnns">GET ALL DATA</button>
+    <div class="out"></div>
+    <table class='table'></table>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+        integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        $(document).ready(function () {
+            // insert
+            $("#butn").click(function () {
+
+                let formdata = $("#form_one").serializeArray();
+                // console.log(formdata);
+                $.ajax({
+                    url: "insert.php",
+                    type: "POST",
+                    data: formdata,
+                    success: function (data) {
+                        if (data == 0) {
+                            return false;
+                        } else {
+                            $(".out:eq(0)").html(data);
+
+                            getdata();
+                            $("#form_one").each(function () {
+                                this.reset();
+                            });
+                        }
+
+                    }
+                });
+            });
+            // select
+            $(".butnns:eq(2)").click(function () {
+                getdata();
+            });
+            function getdata() {
+                $.ajax({
+                    url: "select.php",
+                    type: "POST",
+                    success: function (data) {
+                        $(".table").html(data);
+                    }
+                });
+            }
+
+            // edit
+            $(".table").on("click", ".btn_ss", function () {
+                let main_id = $(this).attr("data-id");
+                $.ajax({
+                    url: "edit.php",
+                    type: "POST",
+                    data: { id: main_id },
+                    success: function (data) {
+                        console.log(data);
+                        var op = JSON.parse(data);
+                        $("#idle").val(op.id);
+                        $("#fname").val(op.name);
+                        $("#age").val(op.age);
+                        $("#mob").val(op.mobile);
+                        $("#butn").hide();
+                        $("#butn_2").show();
+
+
+                    }
+                });
+            });
+
+            // update
+            $(".butnns:eq(1)").click(function () {
+                let formdata = $("#form_one").serializeArray();
+                $.ajax({
+                    url: "update.php",
+                    type: "POST",
+                    data: formdata,
+                    success: function (data) {
+                        $(".out:eq(0)").html(data);
+                        getdata();
+                    }
+                });
+            });
+            // delete
+            $(".table").on("click", ".btn_s", function () {
+                var dele = $(this).attr("data-id");
+                $.ajax({
+                    url: "delete.php",
+                    type: "POST",
+                    data:{id:dele},
+                    success: function (data) {
+                        $(".out:eq(0)").html(data);
+                        getdata();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
